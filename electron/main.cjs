@@ -21,8 +21,16 @@ async function sync(month) {
   const task = (async () => {
     const [from,to] = monthBounds(month);
     const events = await mcp.events(from,to);
+    const lmsEvents = events.filter(event => event.source === 'google' && event.deadline && event.start?.date && event.end?.date);
+    const updateResults = await Promise.allSettled(lmsEvents.map(event => mcp.call('updateCalendarEvent', {
+      calendarId: 'primary', eventId: event.id, start: event.start, end: event.end, sendUpdates: 'none'
+    })));
+    const failed = updateResults.filter(result => result.status === 'rejected');
     store.update(data => { data.connected = true; data.months[month] = { events, syncedAt: new Date().toISOString() }; });
-    return snapshot(month);
+    const result = snapshot(month);
+    if (failed.length) result.warning = `${lmsEvents.length - failed.length}개 LMS 일정을 정리했습니다. ${failed.length}개는 Google 권한 또는 일정 상태를 확인해 주세요.`;
+    else if (lmsEvents.length) result.warning = `${lmsEvents.length}개 LMS 일정을 마감일 기준으로 정리했습니다.`;
+    return result;
   })();
   inflight.set(month,task);
   try { return await task; } finally { inflight.delete(month); }
