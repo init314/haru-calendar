@@ -1,0 +1,6 @@
+node_modules/
+.tools/
+release/
+test-output/
+*.log
+*client_secret*.json

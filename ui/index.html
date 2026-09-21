@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="ko">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'"><title>하루 캘린더</title><link rel="stylesheet" href="style.css"></head>
+<body>
+  <aside class="sidebar">
+    <div class="brand"><span class="brand-icon">✓</span><div>하루<span class="brand-sub">HARU CALENDAR</span></div></div>
+    <button class="primary new-event" id="new-event"><span>＋</span> 새 일정</button>
+    <nav><button class="nav-item active" id="calendar-view"><span>▦</span> 내 캘린더 <small>월</small></button><button class="nav-item" id="today-nav"><span>◉</span> 오늘의 일정</button></nav>
+    <div class="side-label">내 캘린더</div>
+    <label class="calendar-filter"><input type="checkbox" id="show-google" checked><span>Google 캘린더</span><span class="color-dot purple"></span></label>
+    <label class="calendar-filter"><input type="checkbox" id="show-local" checked><span>나만의 일정</span><span class="color-dot green"></span></label>
+    <div class="sidebar-note"><span>작은 체크, 가벼운 하루.</span><p>끝낸 일정은 체크하고<br>다음 할 일에 집중해 보세요.</p><div class="note-art">✓ <span>✓</span> ✓</div></div>
+    <div class="connection"><div><span id="connection-dot" class="status-dot"></span><strong id="connection-title">Google 연결 준비</strong></div><p id="connection-info">기존 MCP 연결을 사용합니다</p><button id="connect" class="text-button">MCP로 연결하기 ↗</button></div>
+    <button id="help" class="help-button">ⓘ 사용 안내</button>
+  </aside>
+  <main>
+    <header><div><div class="eyebrow">MAKE ROOM FOR YOUR DAY</div><h1>나의 하루를, 하나씩.</h1><p>계획부터 완료까지 한곳에서 관리하세요.</p></div><div class="header-actions"><span id="sync-status" role="status">로컬 일정 사용 가능</span><button id="sync" class="icon-button" title="새로고침" aria-label="구글 일정 새로고침">↻</button><span class="avatar">H</span></div></header>
+    <section class="calendar-section"><div class="calendar-toolbar"><div class="month-nav"><h2 id="month-title"></h2><button id="prev" class="icon-button" aria-label="이전 달">‹</button><button id="next" class="icon-button" aria-label="다음 달">›</button><button id="today" class="outline-button">오늘</button></div><div class="view-pill">월간 캘린더</div></div><div class="weekdays"><span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span></div><div id="calendar" class="calendar-grid"></div></section>
+    <footer><span><i class="color-dot purple"></i> Google 캘린더 <i class="color-dot green"></i> 나만의 일정</span><span>체크 한 번으로, 오늘도 한 걸음.</span></footer>
+  </main>
+  <aside class="agenda"><div class="agenda-heading"><div><div class="eyebrow" id="day-label">TODAY</div><h2 id="day-title"></h2></div><button id="add-day" class="icon-button" aria-label="선택한 날짜에 일정 추가">＋</button></div><p id="day-subtitle"></p><div class="progress-card"><div><span>하루의 달성률</span><strong id="progress-text">0%</strong></div><progress id="progress" value="0" max="100"></progress><small id="progress-caption">오늘의 첫 체크를 기다려요</small></div><div class="list-label">할 일 <span id="pending-count">0</span></div><div id="pending" class="event-list"></div><div class="completed-heading"><span>완료한 일정 <b id="done-count">0</b></span><span>✓</span></div><div id="completed" class="event-list"></div><div class="agenda-bottom">완료 체크는 이 PC에 저장돼요.<br>다시 클릭하면 할 일로 돌아옵니다.</div></aside>
+  <dialog id="event-dialog"><form id="event-form"><div class="dialog-title"><h2>새로운 일정</h2><button type="button" class="icon-button close-dialog" aria-label="닫기">×</button></div><p>오늘의 계획을 가볍게 적어보세요.</p><label>일정 제목<input name="title" id="event-title" required maxlength="200" placeholder="무엇을 할 예정인가요?" autofocus></label><div class="form-row"><label>날짜<input name="date" id="event-date" type="date" required></label><label>시간 <small>선택</small><input name="time" id="event-time" type="time"></label></div><label>저장할 캘린더<select name="source" id="event-source"><option value="local">나만의 일정 · 이 PC에 저장</option><option value="google">Google 캘린더 · 기본 캘린더에 등록</option></select></label><p class="form-hint">시간을 비워두면 종일 일정으로, 지정하면 1시간 일정으로 등록됩니다.</p><div id="form-error" role="alert"></div><button class="primary" id="save-event" type="submit">일정 추가하기</button></form></dialog>
+  <dialog id="help-dialog"><div class="dialog-title"><h2>하루 사용 안내</h2><button class="icon-button close-dialog" aria-label="닫기">×</button></div><p>날짜를 선택하면 오른쪽에 일정이 나타납니다. 동그란 체크 버튼을 누르면 취소선이 생기고 완료 목록으로 이동합니다.</p><p>Google 일정은 이 PC에 설정된 Google MCP 서버의 기본 계정과 기본 캘린더에서 가져옵니다. 앱 실행 시와 5분마다 새로고침합니다.</p><p>연결된 집 PC의 MCP 서버와 네트워크가 켜져 있어야 동기화됩니다. 연결이 끊겨도 이미 불러온 일정과 완료 체크는 사용할 수 있습니다.</p><p>완료 상태는 이 PC에 저장되며 Google 원본의 제목은 바뀌지 않습니다. Google 일정 제목을 누르면 원본을 열어 수정할 수 있습니다.</p></dialog>
+  <div id="toast" role="status"></div><script src="app.js"></script>
+</body></html>
