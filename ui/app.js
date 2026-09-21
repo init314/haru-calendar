@@ -66,7 +66,7 @@ function eventCard(event) {
   const title = element(event.link?'button':'div','event-title',event.title);
   title.title = event.description || event.title;
   if(event.link) title.onclick = () => api('openEvent',{url:event.link}).catch(e=>toast(e.message));
-  const meta = element('div','event-meta'); meta.append(element('span','color-dot '+(event.source==='google'?'purple':'green')),element('span','',event.time || '종일'),element('span','',event.source==='google'?'· Google':'· 나만의 일정'));
+  const meta = element('div','event-meta'); meta.append(element('span','color-dot '+(event.source==='google'?'purple':'green')),element('span','',event.deadline ? '마감' : (event.time || '종일')),element('span','',event.source==='google'?'· Google':'· 나만의 일정'));
   if (event.end && onDay(event,selected) && event.date !== selected) meta.append(element('span','','진행 중'));
   info.append(title,meta);
   if(event.location) info.append(element('div','event-location',event.location));

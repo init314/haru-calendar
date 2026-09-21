@@ -23,6 +23,12 @@ test('실제 MCP 텍스트 응답 및 종일/시간 일정을 읽는다',()=>{
   const result={content:[{type:'text',text:'Found 2 event(s):\n\n**과제**\nDate: 2026-09-21 - 2026-09-22\nDescription: 제출\nLink: https://www.google.com/calendar/event?eid=abc\nEvent ID: abc\n\n---\n\n**강의**\nTime: 2026-09-21T09:00:00+09:00 - 2026-09-21T12:00:00+09:00\nLocation: 강의실\nEvent ID: def'}]};
   const events=parseEvents(result); assert.equal(events.length,2); assert.equal(events[0].title,'과제'); assert.equal(events[1].location,'강의실'); assert.equal(events[0].start.date,'2026-09-21');
 });
+test('LMS 기간 일정은 마감일에만 표시한다',()=>{
+  const result={content:[{type:'text',text:'Found 1 event(s):\n\n**[LMS] 과제**\nDate: 2026-09-21 - 2026-09-23\nDescription: 제출\nLMS-UID:123\nEvent ID: lms1'}]};
+  const [event]=parseEvents(result);
+  assert.equal(event.deadline,true); assert.equal(event.date,'2026-09-22');
+  assert.equal(event.start.date,'2026-09-22'); assert.equal(event.end.date,'2026-09-23');
+});
 test('오류나 불완전한 응답을 빈 일정으로 덮어쓰지 않는다',()=>{
   assert.throws(()=>parseEvents({isError:true,content:[{type:'text',text:'Error: disconnected'}]}));
   assert.throws(()=>parseEvents({content:[{type:'text',text:'Found 2 event(s):\n\ninvalid'}]}));

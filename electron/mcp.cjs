@@ -26,10 +26,21 @@ function textResult(result) {
 }
 function normalize(item) {
   if (!item.id || !item.start) throw new Error('일정 응답 형식을 확인할 수 없습니다.');
-  return { id: item.id, title: item.summary || '(제목 없음)', source: 'google', start: item.start, end: item.end,
+  const title = item.summary || '(제목 없음)';
+  const description = item.description || '';
+  const isLmsDeadline = /^\[LMS\]/i.test(title) || /LMS-UID:/i.test(description);
+  if (isLmsDeadline && item.end) {
+    // LMS 기간 과제/영상은 시작일부터 계속 표시하지 않고 마감일에만 표시한다.
+    const deadline = item.end.date ? localDay(new Date(`${item.end.date}T00:00:00`)) : localDay(new Date(item.end.dateTime));
+    const deadlineDate = item.end.date ? localDay(new Date(new Date(`${item.end.date}T00:00:00`).getTime() - 86400000)) : deadline;
+    const nextDate = localDay(new Date(new Date(`${deadlineDate}T00:00:00`).getTime() + 86400000));
+    return { id: item.id, title, source: 'google', start: { date: deadlineDate }, end: { date: nextDate }, date: deadlineDate,
+      time: '', deadline: true, location: item.location || '', description, link: item.htmlLink || '' };
+  }
+  return { id: item.id, title, source: 'google', start: item.start, end: item.end,
     date: item.start.date || localDay(new Date(item.start.dateTime)),
     time: item.start.dateTime ? new Date(item.start.dateTime).toTimeString().slice(0,5) : '',
-    location: item.location || '', description: item.description || '', link: item.htmlLink || '' };
+    location: item.location || '', description, link: item.htmlLink || '' };
 }
 function parseEvents(result) {
   const value = textResult(result);
