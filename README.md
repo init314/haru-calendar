@@ -4,7 +4,7 @@ Google MCP 서버를 사용하는 Windows 캘린더입니다. 월간 달력에�
 
 ## 설치
 
-`release/Haru-Calendar-Setup-1.0.0.exe`를 실행하세요. 사용자 계정에 설치하며 바탕화면 바로가기를 만듭니다.
+`release/Haru-Calendar-Setup-1.1.0.exe`를 실행하세요. 사용자 계정에 설치하며 바탕화면 바로가기를 만듭니다.
 
 ## Google 연결
 
